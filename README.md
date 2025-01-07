@@ -35,7 +35,7 @@ Download the binary file for your operating system from the Releases section.
 
 1. Open the casting URL on your PC:
     ```
-    http://<your-pc-ip>:8080/cast
+    http://localhost:8080/cast
     ```
 
 2. Open the player URL on your TV or any device with a web browser:
