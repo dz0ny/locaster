@@ -24,7 +24,6 @@ https://github.com/user-attachments/assets/6faaccbe-4e06-496d-bed7-f75ab93a020b
 
 ### Prerequisites
 
-- Go 1.23.3 or later
 - A device with a web browser
 
 ### Installation
