@@ -21,7 +21,7 @@ func main() {
 	http.HandleFunc("/cast", castHandler)
 	http.HandleFunc("/screenshot.jpg", screenshotHandler)
 	http.HandleFunc("/events", eventsHandler)
-
+	fmt.Printf("Recorder running at http://localhost:8080/cast\n")
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {
 		log.Fatal(err)
@@ -29,7 +29,6 @@ func main() {
 	for _, addr := range addrs {
 		if ipNet, ok := addr.(*net.IPNet); ok && !ipNet.IP.IsLoopback() {
 			if ipNet.IP.To4() != nil {
-				fmt.Printf("Caster running at http://%s:8080/cast\n", ipNet.IP.String())
 				fmt.Printf("Player running at http://%s:8080\n", ipNet.IP.String())
 			}
 		}

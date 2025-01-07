@@ -74,7 +74,6 @@
         function startSSE() {
             const eventSource = new EventSource('/events');
             eventSource.onmessage = function (event) {
-                console.log('Received event:', event.data.length, 'bytes');
                 const arrayBuffer = Uint8Array.from(atob(event.data), c => c.charCodeAt(0)).buffer;
                 const imageBlob = new Blob([arrayBuffer], { type: 'image/jpeg' });
                 const imageUrl = URL.createObjectURL(imageBlob);
