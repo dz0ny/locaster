@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title id="title">Caster</title>
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #screenshot {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas" style="display:none;"></canvas>
+    <img id="screenshot" src="/screenshot.jpg" />
+    <script>
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+        const screenshot = document.getElementById('screenshot');
+        let isUploading = false;
+
+        async function startScreenCapture() {
+            const stream = await navigator.mediaDevices.getDisplayMedia({
+                video: true
+            });
+
+            const video = document.createElement('video');
+            video.srcObject = stream;
+            await video.play();
+
+            // Set canvas dimensions to match the screen capture
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            setInterval(async () => {
+                if (isUploading) return;
+                isUploading = true;
+
+                // Draw the video frame on the canvas
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                // Convert the canvas image to Blob
+                const imageBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.35));
+
+                // Send the image to the server via POST request
+                const formData = new FormData();
+                formData.append('file', imageBlob, 'screenshot');
+
+                fetch('/cast', {
+                    method: 'POST',
+                    body: formData
+                }).then(response => {
+                    console.log('Uploaded successfully:', response.status);
+                }).catch(error => {
+                    console.error('Upload failed:', error);
+                }).finally(() => {
+                    isUploading = false;
+                });
+            }, 200); // Capture every second
+        }
+
+        function startSSE() {
+            const eventSource = new EventSource('/events');
+            eventSource.onmessage = function (event) {
+                console.log('Received event:', event.data.length, 'bytes');
+                const arrayBuffer = Uint8Array.from(atob(event.data), c => c.charCodeAt(0)).buffer;
+                const imageBlob = new Blob([arrayBuffer], { type: 'image/jpeg' });
+                const imageUrl = URL.createObjectURL(imageBlob);
+                screenshot.src = imageUrl;
+            };
+            eventSource.onerror = function () {
+                console.error('SSE connection error, falling back to image refresh.');
+                eventSource.close();
+                refreshImage();
+            };
+        }
+
+        function refreshImage() {
+            setInterval(() => {
+                screenshot.src = '/screenshot.jpg?' + new Date().getTime();
+            }, 1000);
+        }
+
+        if (window.location.pathname === '/cast') {
+            document.title = 'Caster Pusher';
+            document.querySelector('img').remove();
+            startScreenCapture();
+        } else {
+            document.title = 'Caster Player';
+            if (!!window.EventSource) {
+                startSSE();
+            } else {
+                refreshImage();
+            }
+        }
+    </script>
+</body>
+
+</html>
