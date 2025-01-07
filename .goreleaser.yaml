@@ -8,6 +8,9 @@ project_name: locaster
 before:
   hooks:
     - go mod tidy
+upx:
+  - enabled: true
+    goos: [windows]
 
 builds:
   - env:
