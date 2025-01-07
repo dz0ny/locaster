@@ -65,7 +65,6 @@ func castHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to store file in memory", http.StatusInternalServerError)
 		return
 	}
-	log.Printf("Image stored in memory: %d bytes", len(imageMemory))
 
 	// Notify clients in a non-blocking manner
 	for client := range clients {
@@ -120,7 +119,6 @@ func eventsHandler(w http.ResponseWriter, r *http.Request) {
 	for {
 		select {
 		case msg := <-messageChan:
-			log.Printf("Sending message to client: %d bytes", len(msg))
 			w.Write([]byte("data: "))
 			encoded := base64.StdEncoding.EncodeToString(msg)
 			w.Write([]byte(encoded))
