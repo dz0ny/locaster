@@ -2,6 +2,10 @@
 
 Locaster is a simple and efficient solution for casting your PC screen to cheap TVs that only support displaying JPEG images through a browser. This project allows you to stream your screen to any device with a web browser, making it ideal for older TVs or devices with limited capabilities.
 
+
+https://github.com/user-attachments/assets/6faaccbe-4e06-496d-bed7-f75ab93a020b
+
+
 ## Features
 
 - **Screen Capture**: Capture your PC screen and convert it to JPEG images.
